@@ -27,7 +27,7 @@ const fetchAlbumsInfo = async (user: User) => {
 
     albumsInfo.push({
       ...album,
-      coverImage: `/api/albums/${album.id}/images/serve/123`,
+      coverImage: `/api/serve-images/EFeqK9Pg8GitYlUBaV5FPSl0niB7f31TqyIzVsEuxv549WhN`,
       photosCount
     });
   }

@@ -45,10 +45,9 @@ export function PhotoGrid({
           <Card className="overflow-hidden transition-all hover:shadow-md">
             <CardContent className="p-0">
               <div className="relative aspect-square">
-                <Image
-                  src={photo.url || placeHolderImage }
+                <img
+                  src={`/api/serve-images/${photo.id}` || placeHolderImage.src }
                   alt={photo.note || "Photo"}
-                  fill
                   className="object-cover"
                 />
               </div>
@@ -61,6 +60,7 @@ export function PhotoGrid({
 }
 
 export function PhotoViewer({ photo }: { photo: {
+  id: string
   url: string,
   title: string,
 } }) {
@@ -80,7 +80,7 @@ export function PhotoViewer({ photo }: { photo: {
           }}
         >
           <Image
-            src={photo.url || "/placeholder.svg"}
+            src={`/api/serve-images/${photo.id}` || placeHolderImage}
             alt={photo.title || "Photo"}
             width={1200}
             height={800}

@@ -12,7 +12,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useAuth } from "@clerk/nextjs"
-import Image from "next/image"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { albums } from "@/lib/db";
 import placeholderImage from "../../../public/placeholder.jpg"
@@ -80,10 +79,10 @@ export function AlbumGrid({albums}: {albums: (Album & { photosCount: number })[]
           <Card className="overflow-hidden transition-all hover:shadow-md">
             <CardContent className="p-0">
               <div className="relative aspect-square">
-                <Image
-                  src={album.coverImage || placeholderImage}
+                <img
+                  src={album.coverImage || placeholderImage.src}
                   alt={album.name}
-                  fill
+                  
                   className="object-cover"
                 />
               </div>

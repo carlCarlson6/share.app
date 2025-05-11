@@ -24,7 +24,8 @@ export const albumsUsers = pgTable(
 export const photos = pgTable("photos", {
   id:       varchar({ length: 128 }).primaryKey(),
   note:     varchar({ length: 255 }),
-  url:      varchar({ length: 255 }).notNull(),
+  uploadThingUrl: varchar({ length: 255 }).notNull(),
+  uploadThingId:  varchar({ length: 128 }).notNull(),
   albumId:  varchar({ length: 128 }).notNull().references(() => albums.id),
   uploadBy: varchar({ length: 128 }).notNull(),
   uploadAt: timestamp().notNull(),
