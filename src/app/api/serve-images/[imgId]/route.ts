@@ -9,17 +9,23 @@ export async function GET(
   {params}: { params: Promise<{imgId: string}> }
 ) {
   const { imgId } = await params;
-  console.log(imgId);
+  console.info("requesting access to image", imgId)
 
   const user = await currentUser();
-  if (!user) return notFound();
-  
+  if (!user) {
+    console.error("user not found");
+    return notFound();
+  }
+
   const photo = await db
     .select()
     .from(photos)
-    .where(eq(photos.id, imgId),)
+    .where(eq(photos.id, imgId))
     .then(x => x.at(0));
-  if (!photo) return notFound();
+  if (!photo) {
+    console.error("photo not found");
+    return notFound();
+  }
 
   const result = await db
     .select({ count: count() })
@@ -30,7 +36,10 @@ export async function GET(
         eq(albumsUsers.userId, user.id)
       ))
     .then(x => x.at(0))
-  if (!result && result !== 1) return notFound();
+  if (!result && result !== 1) {
+    console.error("photo not owned");
+    return notFound();
+  }
 
   return fetch(photo.uploadThingUrl);
 }

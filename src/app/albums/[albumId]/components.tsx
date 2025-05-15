@@ -1,4 +1,5 @@
 "use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
@@ -21,13 +22,13 @@ import { BarLoader } from "react-spinners";
 import { photos } from "@/lib/db"
 import placeHolderImage from '../../../../public/placeholder.jpg'
 
-type Photos = typeof photos.$inferSelect
+type Photo = typeof photos.$inferSelect
 
 export function PhotoGrid({ 
   albumId, photos
 }: { 
   albumId: string,
-  photos: Photos[]
+  photos: Photo[]
  }) {
   
   if (photos.length === 0) {
@@ -42,64 +43,16 @@ export function PhotoGrid({
     <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
       {photos.map((photo) => (
         <Link href={`/albums/${albumId}/photos/${photo.id}`} key={photo.id}>
-          <Card className="overflow-hidden transition-all hover:shadow-md">
+          <Card className="overflow-hidden transition-all hover:shadow-xl">
             <CardContent className="p-0">
-              <div className="relative aspect-square">
                 <img
                   src={`/api/serve-images/${photo.id}` || placeHolderImage.src }
                   alt={photo.note || "Photo"}
-                  className="object-cover"
                 />
-              </div>
             </CardContent>
           </Card>
         </Link>
       ))}
-    </div>
-  )
-}
-
-export function PhotoViewer({ photo }: { photo: {
-  id: string
-  url: string,
-  title: string,
-} }) {
-  const [zoom, setZoom] = useState(1)
-
-  const zoomIn = () => setZoom((prev) => Math.min(prev + 0.25, 3))
-  const zoomOut = () => setZoom((prev) => Math.max(prev - 0.25, 1))
-
-  return (
-    <div className="relative">
-      <div className="overflow-hidden bg-black rounded-lg">
-        <div
-          className="relative flex items-center justify-center w-full transition-transform"
-          style={{
-            height: "calc(100vh - 300px)",
-            minHeight: "400px",
-          }}
-        >
-          <Image
-            src={`/api/serve-images/${photo.id}` || placeHolderImage}
-            alt={photo.title || "Photo"}
-            width={1200}
-            height={800}
-            className="object-contain transition-transform"
-            style={{ transform: `scale(${zoom})` }}
-          />
-        </div>
-      </div>
-      <div className="absolute flex items-center gap-3 p-3 bg-white rounded-lg shadow-md bottom-6 right-6">
-        <Button variant="outline" size="icon" onClick={zoomOut} disabled={zoom <= 1}>
-          <ZoomOut className="w-4 h-4" />
-          <span>Zoom out</span>
-        </Button>
-        <span className="text-sm font-medium">{Math.round(zoom * 100)}%</span>
-        <Button variant="outline" size="icon" onClick={zoomIn} disabled={zoom >= 3}>
-          <ZoomIn className="w-4 h-4" />
-          <span>Zoom in</span>
-        </Button>
-      </div>
     </div>
   )
 }
