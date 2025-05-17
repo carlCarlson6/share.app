@@ -1,4 +1,4 @@
-import { albums, albumsUsers, db, photos } from "@/lib/db";
+import { albumsTable, albumsUsersTable, db, photosTable } from "@/lib/db";
 import { currentUser } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { notFound, redirect } from "next/navigation";
@@ -12,14 +12,14 @@ const fetchAlbumInfo = async (albumId: string) => {
 
   const result = await db
     .select({
-      albums
+      albums: albumsTable
     })
-    .from(albums)
-    .innerJoin(albumsUsers, 
+    .from(albumsTable)
+    .innerJoin(albumsUsersTable, 
       and(
-        eq(albums.id, albumsUsers.albumId), 
-        eq(albumsUsers.userId, user.id)))
-      .where(eq(albums.id, albumId))
+        eq(albumsTable.id, albumsUsersTable.albumId), 
+        eq(albumsUsersTable.userId, user.id)))
+      .where(eq(albumsTable.id, albumId))
       .then(x => x.map(y => y.albums));
   const album = result.at(0);
   if (!album) { 
@@ -28,14 +28,24 @@ const fetchAlbumInfo = async (albumId: string) => {
 
   const albumPhotos = await db
     .select()
-    .from(photos)
-    .where(eq(photos.albumId, album.id));
+    .from(photosTable)
+    .where(eq(photosTable.albumId, album.id));
+    
+  const photos: (typeof photosTable.$inferSelect & { content: Blob | null | undefined })[] = [];
+  for (const photo of albumPhotos) {
+    const response = await fetch(photo.uploadThingUrl);
+    const content = response.ok ? await response.blob() : null
+    photos.push({
+      ...photo,
+      content
+    })
+  }
 
   return {
     ...album,
-    photos: albumPhotos,
+    photos,
   };
-} 
+}
 
 export default async function AlbumPage({params,}: {
   params: Promise<{ albumId: string }>;

@@ -3,10 +3,10 @@
 import { useState } from "react"
 import { Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { deletePhoto } from "../(actions)/deletePhoto"
 import { useRouter } from "next/navigation"
 import { match } from 'ts-pattern';
 import { ClipLoader } from "react-spinners"
+import { deletePhoto } from "./deletePhoto"
 
 export const DeletePhotoBtn = ({ 
   photoId, albumId 

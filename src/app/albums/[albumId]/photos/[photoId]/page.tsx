@@ -1,12 +1,12 @@
 import Link from "next/link"
-import { ArrowLeft, Download, Share2, Trash2 } from "lucide-react"
+import { ArrowLeft, Share2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { DeletePhotoBtn} from "./(components)/DeletePhotoBtn";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { fetchPhoto } from "./(actions)/fetchPhoto";
-import { PhotoViewer } from "./(components)/PhotoViewer";
-import { DownloadPhotoBtn } from "./(components)/DownloadPhotoBtn";
+import { DownloadPhotoBtn } from "./DownloadPhotoBtn";
+import { DeletePhotoBtn } from "./DeletePhotoBtn";
+import { PhotoViewer } from "./PhotoViewer";
+import { fetchPhoto } from "./fetchPhoto";
 
 export default async function PhotoPage({ params }: { params: Promise<{ albumId: string; photoId: string }> }) {
   const { albumId, photoId } = await params;

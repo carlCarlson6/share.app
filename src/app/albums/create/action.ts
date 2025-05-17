@@ -1,5 +1,5 @@
 "use server";
-import { albums, albumsUsers, db } from "@/lib/db";
+import { albumsTable, albumsUsersTable, db } from "@/lib/db";
 import { randomUUID } from "crypto";
 import { z } from "zod";
 import { redirect } from "next/navigation";
@@ -23,7 +23,7 @@ async function create(command: z.infer<typeof createAlbumCommandSchema>) {
 
   db.transaction(async (tx) => {
     await tx
-      .insert(albums)
+      .insert(albumsTable)
       .values({
         id: albumId,
         name: parsed.name,
@@ -31,7 +31,7 @@ async function create(command: z.infer<typeof createAlbumCommandSchema>) {
         createdAt: new Date(),
       });
     await tx
-      .insert(albumsUsers)
+      .insert(albumsUsersTable)
       .values({
         userId: user.id,
         albumId: albumId,

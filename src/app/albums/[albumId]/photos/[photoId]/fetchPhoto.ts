@@ -1,13 +1,13 @@
 import "server-only";
-import { albumsUsers, db, photos } from "@/lib/db";
+import { albumsUsersTable, db, photosTable } from "@/lib/db";
 import { User } from "@clerk/nextjs/server";
 import { eq, and, count } from "drizzle-orm";
 
 export const fetchPhoto = async (photoId: string, user: User) => {
   const photo = await db
     .select()
-    .from(photos)
-    .where(eq(photos.id, photoId),)
+    .from(photosTable)
+    .where(eq(photosTable.id, photoId),)
     .then(x => x.at(0));
   if (!photo) {
     console.error("photo not found");
@@ -16,11 +16,11 @@ export const fetchPhoto = async (photoId: string, user: User) => {
 
   const validation = await db
     .select({ count: count() })
-    .from(albumsUsers)
+    .from(albumsUsersTable)
     .where(
       and(
-        eq(albumsUsers.albumId, photo.albumId),
-        eq(albumsUsers.userId, user.id)
+        eq(albumsUsersTable.albumId, photo.albumId),
+        eq(albumsUsersTable.userId, user.id)
       ))
     .then(x => x.at(0))
 
@@ -29,5 +29,11 @@ export const fetchPhoto = async (photoId: string, user: User) => {
     return "not-authorized-to-access" as const
   }
 
-  return photo;
+  const response = await fetch(photo.uploadThingUrl);
+  const content = response.ok ? await response.blob() : null;
+
+  return {
+    ...photo,
+    content
+  };
 }

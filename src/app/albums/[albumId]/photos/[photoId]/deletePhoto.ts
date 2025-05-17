@@ -1,7 +1,7 @@
 "use server"
 
-import { db, photos, albumsUsers } from "@/lib/db";
-import { currentUser, User } from "@clerk/nextjs/server";
+import { db, photosTable, albumsUsersTable } from "@/lib/db";
+import { currentUser } from "@clerk/nextjs/server";
 import { eq, and, count } from "drizzle-orm";
 
 export const deletePhoto = async (imgId: string) => {
@@ -14,8 +14,8 @@ export const deletePhoto = async (imgId: string) => {
 
   const photo = await db
     .select()
-    .from(photos)
-    .where(eq(photos.id, imgId))
+    .from(photosTable)
+    .where(eq(photosTable.id, imgId))
     .then(x => x.at(0));
   if (!photo) {
     console.error("photo not found");
@@ -24,11 +24,11 @@ export const deletePhoto = async (imgId: string) => {
   
   const result = await db
     .select({ count: count() })
-    .from(albumsUsers)
+    .from(albumsUsersTable)
     .where(
       and(
-        eq(albumsUsers.albumId, photo.albumId),
-        eq(albumsUsers.userId, user.id)
+        eq(albumsUsersTable.albumId, photo.albumId),
+        eq(albumsUsersTable.userId, user.id)
       ))
     .then(x => x.at(0))
   if (!result && result !== 1) {
@@ -37,8 +37,8 @@ export const deletePhoto = async (imgId: string) => {
   }
 
   await db
-    .delete(photos)
-    .where(eq(photos.id, imgId));
+    .delete(photosTable)
+    .where(eq(photosTable.id, imgId));
 
   return "done" as const;
 }

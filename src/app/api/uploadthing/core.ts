@@ -1,4 +1,4 @@
-import { albums, albumsUsers, db, photos } from "@/lib/db";
+import { albumsTable, albumsUsersTable, db, photosTable } from "@/lib/db";
 import { currentUser } from "@clerk/nextjs/server";
 import { randomUUID } from "crypto";
 import { and, count, eq } from "drizzle-orm";
@@ -23,11 +23,11 @@ const imageUpload = f({
 
     const result = await db
       .select({count: count()})
-      .from(albumsUsers)
+      .from(albumsUsersTable)
       .where(
         and(
-          eq(albumsUsers.userId, user.id), 
-          eq(albumsUsers.albumId, input.albumId))
+          eq(albumsUsersTable.userId, user.id), 
+          eq(albumsUsersTable.albumId, input.albumId))
       );
     if (result[0].count !== 1) throw new UploadThingError("Unauthorized");
 
@@ -36,9 +36,10 @@ const imageUpload = f({
   .onUploadComplete(async ({ metadata, file, }) => {
     await db.transaction(async tx => {
       await tx
-        .insert(photos)
+        .insert(photosTable)
         .values({
           id:             randomUUID(),
+          fileName:       file.name,
           note:           file.name,
           uploadThingId:  file.key,
           uploadThingUrl: file.ufsUrl,
@@ -47,11 +48,11 @@ const imageUpload = f({
           uploadAt:       new Date(),
         });
       await tx
-        .update(albums)
+        .update(albumsTable)
         .set({
           coverImage: file.ufsUrl
         })
-        .where(eq(albums.id, metadata.albumId));
+        .where(eq(albumsTable.id, metadata.albumId));
     });
   
     console.log("Upload complete for userId:", metadata.userId);

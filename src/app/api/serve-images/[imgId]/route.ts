@@ -1,4 +1,4 @@
-import { albumsUsers, db, photos } from "@/lib/db";
+import { albumsUsersTable, db, photosTable } from "@/lib/db";
 import { currentUser } from "@clerk/nextjs/server";
 import { and, count, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
@@ -19,8 +19,8 @@ export async function GET(
 
   const photo = await db
     .select()
-    .from(photos)
-    .where(eq(photos.id, imgId))
+    .from(photosTable)
+    .where(eq(photosTable.id, imgId))
     .then(x => x.at(0));
   if (!photo) {
     console.error("photo not found");
@@ -29,11 +29,11 @@ export async function GET(
 
   const result = await db
     .select({ count: count() })
-    .from(albumsUsers)
+    .from(albumsUsersTable)
     .where(
       and(
-        eq(albumsUsers.albumId, photo.albumId),
-        eq(albumsUsers.userId, user.id)
+        eq(albumsUsersTable.albumId, photo.albumId),
+        eq(albumsUsersTable.userId, user.id)
       ))
     .then(x => x.at(0))
   if (!result && result !== 1) {
@@ -41,5 +41,9 @@ export async function GET(
     return notFound();
   }
 
-  return fetch(photo.uploadThingUrl);
+  const response = await fetch(photo.uploadThingUrl);
+
+  response.headers.set('content-disposition', `attachment; filename="${photo.fileName}"`)
+
+  return response;
 }

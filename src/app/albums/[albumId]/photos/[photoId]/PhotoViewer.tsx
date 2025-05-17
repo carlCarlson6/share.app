@@ -3,9 +3,9 @@
 import { useState } from "react"
 import { ZoomIn, ZoomOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { photos } from "@/lib/db"
+import { photosTable } from "@/lib/db"
 
-type Photo = typeof photos.$inferSelect
+type Photo = typeof photosTable.$inferSelect & { content: Blob | null | undefined }
 
 export function PhotoViewer({ photo }: { photo: Photo }) {
   const [zoom, setZoom] = useState(1)
@@ -24,7 +24,7 @@ export function PhotoViewer({ photo }: { photo: Photo }) {
           }}
         >
           <img
-            src={`/api/serve-images/${photo.id}` || "/placeholder.jpg"}
+            src={photo.content || "/placeholder.jpg"}
             alt={photo.note || "Photo"}
             className="object-contain transition-transform"
             style={{ transform: `scale(${zoom})` }}

@@ -3,9 +3,8 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
-import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
-import { ArrowLeft, UploadIcon, ZoomIn, ZoomOut } from "lucide-react"
+import { ArrowLeft, UploadIcon } from "lucide-react"
 import type React from "react"
 import { Upload } from "lucide-react"
 import {
@@ -19,10 +18,10 @@ import {
 import { useRouter } from "next/navigation"
 import { UploadDropzone, useUploadThing } from "@/lib/uploadthing"
 import { BarLoader } from "react-spinners";
-import { photos } from "@/lib/db"
+import { photosTable } from "@/lib/db"
 import placeHolderImage from '../../../../public/placeholder.jpg'
 
-type Photo = typeof photos.$inferSelect
+type Photo = typeof photosTable.$inferSelect & { content: Blob | null | undefined }
 
 export function PhotoGrid({ 
   albumId, photos
@@ -46,7 +45,7 @@ export function PhotoGrid({
           <Card className="overflow-hidden transition-all hover:shadow-xl">
             <CardContent className="p-0">
                 <img
-                  src={`/api/serve-images/${photo.id}` || placeHolderImage.src }
+                  src={ photo.content || placeHolderImage.src }
                   alt={photo.note || "Photo"}
                 />
             </CardContent>

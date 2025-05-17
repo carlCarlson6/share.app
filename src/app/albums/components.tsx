@@ -13,8 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useAuth } from "@clerk/nextjs"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { albums } from "@/lib/db";
-import placeholderImage from "../../../public/placeholder.jpg"
+import { albumsTable } from "@/lib/db";
 
 type UserData = {
   id: string,
@@ -69,9 +68,11 @@ function UserMenu({user}: {user: UserData}) {
   )
 }
 
-type Album = typeof albums.$inferSelect
+type Album = typeof albumsTable.$inferSelect
 
-export function AlbumGrid({albums}: {albums: (Album & { photosCount: number })[] }) {
+export function AlbumGrid({albums}: {
+  albums: (Album & { photosCount: number, coverPhotoContent: Blob | null | undefined })[] 
+}) {
   return (
     <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {albums.map((album) => (
@@ -80,9 +81,8 @@ export function AlbumGrid({albums}: {albums: (Album & { photosCount: number })[]
             <CardContent className="p-0">
               <div className="relative aspect-square">
                 <img
-                  src={album.coverImage || placeholderImage.src}
+                  src={album.coverPhotoContent || "/placeholder.jpg"}
                   alt={album.name}
-                  
                   className="object-cover"
                 />
               </div>
